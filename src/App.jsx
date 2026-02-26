@@ -37,34 +37,36 @@ const TECH_STACK = [
   {
     category: 'Frontend',
     items: [
-      { name: 'HTML5', color: '#e34f26' },
-      { name: 'CSS3', color: '#1572b6' },
-      { name: 'JavaScript', color: '#f7df1e' },
-      { name: 'React', color: '#61dafb' },
+      { name: 'HTML5'},
+      { name: 'CSS3'},
+      { name: 'JavaScript'},
+      { name: 'React'},
     ],
   },
   {
     category: 'Backend',
     items: [
-      { name: 'Node.js', color: '#339933' },
-      { name: 'PHP', color: '#777bb4' },
-      { name: 'Laravel', color: '#ff2d20' },
+      { name: 'Node.js'},
+      { name: 'PHP'},
+      { name: 'Laravel'},
+      { name: 'Python'},
+      { name: 'Go'},
     ],
   },
   {
     category: 'Database',
     items: [
-      { name: 'MySQL', color: '#4479a1' },
-      { name: 'PostgreSQL', color: '#4169e1' },
+      { name: 'MySQL'},
+      { name: 'PostgreSQL'},
     ],
   },
   {
     category: 'Tools',
     items: [
-      { name: 'Git', color: '#f05032' },
-      { name: 'Figma', color: '#a259ff' },
-      { name: 'VS Code', color: '#007acc' },
-      { name: 'Docker', color: '#2496ed' },
+      { name: 'Git'},
+      { name: 'Figma'},
+      { name: 'VS Code'},
+      { name: 'Docker'},
     ],
   },
 ]
@@ -267,10 +269,10 @@ function About() {
               opportunities. Let's build something great together.
             </p>
             <div className="about-traits">
-              <span className="trait-badge">🎯 Detail-Oriented</span>
-              <span className="trait-badge">🧩 Problem Solver</span>
-              <span className="trait-badge">⚡ Fast Learner</span>
-              <span className="trait-badge">🤝 Team Player</span>
+              <span className="trait-badge">Detail-Oriented</span>
+              <span className="trait-badge">Problem Solver</span>
+              <span className="trait-badge">Fast Learner</span>
+              <span className="trait-badge">Team Player</span>
             </div>
           </div>
         </div>
@@ -327,12 +329,6 @@ function TechStack() {
               <div className="tech-list">
                 {cat.items.map((item) => (
                   <div className="tech-item" key={item.name}>
-                    <div
-                      className="tech-icon"
-                      style={{ background: `${item.color}20`, color: item.color }}
-                    >
-                      {item.name.slice(0, 2).toUpperCase()}
-                    </div>
                     {item.name}
                   </div>
                 ))}
@@ -427,7 +423,7 @@ function CTA() {
           <h2 className="heading-lg">Let's Build Something<br /><span className="gradient-text">Great Together</span></h2>
           <p>
             Whether you need a stunning landing page, a robust web application,
-            or a complete digital transformation — I'm here to help you bring your
+            or a complete digital transformation. I'm here to help you bring your
             vision to life.
           </p>
           <div className="cta-buttons">
@@ -447,12 +443,53 @@ function CTA() {
 function Contact() {
   const ref = useInView()
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' })
+  const [errors, setErrors] = useState({})
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value })
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
+    
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: '' })
+    }
+  }
+  const validateForm = () => {
+    let newErrors = {}
+    let isValid = true
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required'
+      isValid = false
+    }
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required'
+      isValid = false
+    } else {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      
+      if (!emailPattern.test(formData.email)) {
+        newErrors.email = 'Invalid email format (example: user@gmail.com)'
+        isValid = false
+      }
+    }
+    if (!formData.subject.trim()) {
+      newErrors.subject = 'Subject is required'
+      isValid = false
+    }
+    if (!formData.message.trim()) {
+      newErrors.message = 'message is required'
+      isValid = false
+    }
+    setErrors(newErrors)
+    return isValid
+  }
   const handleSubmit = (e) => {
     e.preventDefault()
-    alert('Thank you for your message! I will get back to you soon.')
-    setFormData({ name: '', email: '', subject: '', message: '' })
+    if (validateForm()) {
+      alert('Thank you for your message! I will get back to you soon.')
+      setFormData({ name: '', email: '', subject: '', message: '' })
+      setErrors({})
+    }
   }
 
   return (
@@ -470,28 +507,24 @@ function Contact() {
               these channels or use the form.
             </p>
             <div className="contact-item">
-              <div className="contact-icon">✉️</div>
               <div className="contact-item-text">
                 <div className="label">Email</div>
                 <div className="value">gialinggardy156@gmail.com</div>
               </div>
             </div>
             <div className="contact-item">
-              <div className="contact-icon">💼</div>
               <div className="contact-item-text">
                 <div className="label">LinkedIn</div>
                 <div className="value">linkedin.com/in/gia-rizky-linggardi-5424a3371</div>
               </div>
             </div>
             <div className="contact-item">
-              <div className="contact-icon">🐙</div>
               <div className="contact-item-text">
                 <div className="label">GitHub</div>
                 <div className="value">github.com/grzkyl</div>
               </div>
             </div>
             <div className="contact-item">
-              <div className="contact-icon">📅</div>
               <div className="contact-item-text">
                 <div className="label">Instagram</div>
                 <div className="value">instagram.com/grizkyl</div>
@@ -502,20 +535,24 @@ function Contact() {
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="name">Name</label>
-                <input type="text" id="name" name="name" placeholder="Your name" value={formData.name} onChange={handleChange} required />
+                <input type="text" id="name" name="name" placeholder="Your name" value={formData.name} onChange={handleChange} style={{ borderColor: errors.name ? '#ef4444' : '' }} />
+                {errors.name && <span style={{ color: '#ef4444', fontSize: '0.8rem' }}>{errors.name}</span>}
               </div>
               <div className="form-group">
                 <label htmlFor="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="your@email.com" value={formData.email} onChange={handleChange} required />
+                <input type="email" id="email" name="email" placeholder="your@gmail.com" value={formData.email} onChange={handleChange} style={{ borderColor: errors.email ? '#ef4444' : '' }} />
+                {errors.email && <span style={{ color: '#ef4444', fontSize: '0.8rem' }}>{errors.email}</span>}
               </div>
             </div>
             <div className="form-group">
               <label htmlFor="subject">Subject</label>
-              <input type="text" id="subject" name="subject" placeholder="Project inquiry" value={formData.subject} onChange={handleChange} required />
+              <input type="text" id="subject" name="subject" placeholder="Project inquiry" value={formData.subject} onChange={handleChange} style={{ borderColor: errors.subject ? '#ef4444' : '' }} />
+              {errors.subject && <span style={{ color: '#ef4444', fontSize: '0.8rem' }}>{errors.subject}</span>}
             </div>
             <div className="form-group">
               <label htmlFor="message">Message</label>
-              <textarea id="message" name="message" placeholder="Tell me about your project..." value={formData.message} onChange={handleChange} required />
+              <textarea id="message" name="message" placeholder="Tell me about your project..." value={formData.message} onChange={handleChange} style={{ borderColor: errors.message ? '#ef4444' : '' }} />
+              {errors.message && <span style={{ color: '#ef4444', fontSize: '0.8rem' }}>{errors.message}</span>}
             </div>
             <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
               Send Message →
