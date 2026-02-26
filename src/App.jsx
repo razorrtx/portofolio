@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import './App.css'
+import ReCAPTCHA from "react-google-recaptcha"
+import emailjs from "@emailjs/browser"
 
 /* ==============================
    DATA
@@ -444,6 +446,10 @@ function Contact() {
   const ref = useInView()
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' })
   const [errors, setErrors] = useState({})
+  const [captchaValue, setCaptchaValue] = useState(null)
+  const form = useRef()
+  const captchaRef = useRef(null)
+  const [isSending, setIsSending] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -453,9 +459,48 @@ function Contact() {
       setErrors({ ...errors, [name]: '' })
     }
   }
+
+  const handleCaptchaChange = (value) => {
+    console.log("Captcha value:", value)
+    setCaptchaValue(value)
+    if (value && errors.captcha) {
+      setErrors(prev => ({ ...prev, captcha: '' }))
+    }
+  }
+
   const validateForm = () => {
     let newErrors = {}
     let isValid = true
+
+    if (validateForm()) {
+      setIsSending(true)
+
+      
+      emailjs.sendForm(
+        'service_hw94uob',   // service ID'
+        'template_2mk0k3r',  // Template ID'
+        form.current,        
+        'WRlCtj1SAayP5DqMZ'    // public key
+      )
+      .then((result) => {
+          console.log(result.text)
+          alert('Your message has been sent successfully')
+          
+          // Reset Form
+          setFormData({ name: '', email: '', subject: '', message: '' })
+          setCaptchaValue(null)
+          setErrors({})
+          setIsSending(false)
+          if (captchaRef.current) {
+             captchaRef.current.reset()
+          }
+          
+      }, (error) => {
+          console.log(error.text)
+          alert('Failed to send message, please try again later.')
+          setIsSending(false)
+      })
+    }
 
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required'
@@ -480,6 +525,10 @@ function Contact() {
       newErrors.message = 'message is required'
       isValid = false
     }
+    if (!captchaValue) {
+      newErrors.captcha = 'Please verify that you are not a robot'
+      isValid = false
+    }
     setErrors(newErrors)
     return isValid
   }
@@ -487,8 +536,10 @@ function Contact() {
     e.preventDefault()
     if (validateForm()) {
       alert('Thank you for your message! I will get back to you soon.')
+      alert('Message sent! Captcha verified.')
       setFormData({ name: '', email: '', subject: '', message: '' })
       setErrors({})
+      setCaptchaValue(null)
     }
   }
 
@@ -515,23 +566,23 @@ function Contact() {
             <div className="contact-item">
               <div className="contact-item-text">
                 <div className="label">LinkedIn</div>
-                <div className="value">linkedin.com/in/gia-rizky-linggardi-5424a3371</div>
+                <div className="value"><a href="https://linkedin.com/in/gia-rizky-linggardi-5424a3371">linkedin.com/in/gia-rizky-linggardi</a></div>
               </div>
             </div>
             <div className="contact-item">
               <div className="contact-item-text">
                 <div className="label">GitHub</div>
-                <div className="value">github.com/grzkyl</div>
+                <div className="value"><a href="https://github.com/grzkyl">github.com/grzkyl</a></div>
               </div>
             </div>
             <div className="contact-item">
               <div className="contact-item-text">
                 <div className="label">Instagram</div>
-                <div className="value">instagram.com/grizkyl</div>
+                <div className="value"><a href="https://instagram.com/grizkyl">instagram.com/grizkyl</a></div>
               </div>
             </div>
           </div>
-          <form className="contact-form animate-in delay-2" onSubmit={handleSubmit}>
+          <form ref={form} className="contact-form animate-in delay-2" onSubmit={handleSubmit} noValidate >
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="name">Name</label>
@@ -554,8 +605,13 @@ function Contact() {
               <textarea id="message" name="message" placeholder="Tell me about your project..." value={formData.message} onChange={handleChange} style={{ borderColor: errors.message ? '#ef4444' : '' }} />
               {errors.message && <span style={{ color: '#ef4444', fontSize: '0.8rem' }}>{errors.message}</span>}
             </div>
-            <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-              Send Message →
+            <div className="form-group" style={{ marginBottom: '20px' }}>
+              <ReCAPTCHA theme="dark" sitekey="MASUKKAN_SITE_KEY_DARI_GOOGLE_DISINI" ref={captchaRef} onChange={handleCaptchaChange}
+              />
+              {errors.captcha && <span style={{ color: '#ef4444', fontSize: '0.8rem', display: 'block', marginTop: '5px' }}>{errors.captcha}</span>}
+            </div>
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', opacity: isSending ? 0.7 : 1 }} disabled={isSending} >
+              {isSending ? 'Sending...' : 'Send Message →'}
             </button>
           </form>
         </div>
