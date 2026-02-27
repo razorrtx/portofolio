@@ -472,36 +472,6 @@ function Contact() {
     let newErrors = {}
     let isValid = true
 
-    if (validateForm()) {
-      setIsSending(true)
-
-      
-      emailjs.sendForm(
-        'service_hw94uob',   // service ID'
-        'template_2mk0k3r',  // Template ID'
-        form.current,        
-        'WRlCtj1SAayP5DqMZ'    // public key
-      )
-      .then((result) => {
-          console.log(result.text)
-          alert('Your message has been sent successfully')
-          
-          // Reset Form
-          setFormData({ name: '', email: '', subject: '', message: '' })
-          setCaptchaValue(null)
-          setErrors({})
-          setIsSending(false)
-          if (captchaRef.current) {
-             captchaRef.current.reset()
-          }
-          
-      }, (error) => {
-          console.log(error.text)
-          alert('Failed to send message, please try again later.')
-          setIsSending(false)
-      })
-    }
-
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required'
       isValid = false
@@ -535,11 +505,35 @@ function Contact() {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (validateForm()) {
-      alert('Thank you for your message! I will get back to you soon.')
-      alert('Message sent! Captcha verified.')
-      setFormData({ name: '', email: '', subject: '', message: '' })
-      setErrors({})
-      setCaptchaValue(null)
+      setIsSending(true)
+
+      emailjs.sendForm(
+        'service_hw94uob',   // service ID'
+        'template_2mk0k3r',  // Template ID'
+        form.current,        
+        'WRlCtj1SAayP5DqMZ'    // public key
+      )
+      .then((result) => {
+          console.log(result.text)
+          alert('Your message has been sent successfully')
+          
+          // Reset Form
+          setFormData({ name: '', email: '', subject: '', message: '' })
+          setCaptchaValue(null)
+          setErrors({})
+          setIsSending(false)
+          if (captchaRef.current) {
+             captchaRef.current.reset()
+          }
+          
+      }, (error) => {
+          console.log(error.text)
+          alert('Failed to send message, please try again later.')
+          setIsSending(false)
+      })
+      .finally(() => {
+        setIsSending(false)
+      })
     }
   }
 
