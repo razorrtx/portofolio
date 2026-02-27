@@ -480,21 +480,39 @@ function Contact() {
       newErrors.email = 'Email is required'
       isValid = false
     } else {
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
       
       if (!emailPattern.test(formData.email)) {
         newErrors.email = 'Invalid email format (example: user@gmail.com)'
         isValid = false
+      } else if (formData.email.endsWith('@gmail.co') || formData.email.endsWith('@yahoo.co')) {
+        newErrors.email = 'Did you mean @gmail.com?'
+        isValid = false
       }
     }
+
     if (!formData.subject.trim()) {
       newErrors.subject = 'Subject is required'
       isValid = false
-    }
-    if (!formData.message.trim()) {
-      newErrors.message = 'message is required'
+    }else if (formData.subject.length < 5) {
+      newErrors.subject = 'Subject is too short (min. 5 characters)' 
       isValid = false
     }
+
+
+    const maxChars = 1000
+    const minChars = 10
+    if (!formData.message.trim()) {
+      newErrors.message = 'Message is required'
+      isValid = false
+    } else if (formData.message.length < minChars) {
+      newErrors.message = `Message is too short (min. ${minChars} characters)`
+      isValid = false
+    } else if (formData.message.length > maxChars) {
+      newErrors.message = `Message cannot exceed ${maxChars} characters`
+      isValid = false
+    }
+    
     if (!captchaValue) {
       newErrors.captcha = 'Please verify that you are not a robot'
       isValid = false
@@ -596,7 +614,7 @@ function Contact() {
             </div>
             <div className="form-group">
               <label htmlFor="message">Message</label>
-              <textarea id="message" name="message" placeholder="Tell me about your project..." value={formData.message} onChange={handleChange} style={{ borderColor: errors.message ? '#ef4444' : '' }} />
+              <textarea id="message" name="message" placeholder="Tell me about your project..." value={formData.message} onChange={handleChange} maxLength={1000} style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }} />
               {errors.message && <span style={{ color: '#ef4444', fontSize: '0.8rem' }}>{errors.message}</span>}
             </div>
             <div className="form-group" style={{ marginBottom: '20px' }}>
