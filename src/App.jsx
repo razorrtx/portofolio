@@ -606,7 +606,7 @@ function Contact() {
               {errors.message && <span style={{ color: '#ef4444', fontSize: '0.8rem' }}>{errors.message}</span>}
             </div>
             <div className="form-group" style={{ marginBottom: '20px' }}>
-              <ReCAPTCHA theme="dark" sitekey="6Len3HgsAAAAAGUbpmaiLUANTSE0oYlV7oyG4cO3" ref={captchaRef} onChange={handleCaptchaChange}
+              <ReCAPTCHA theme="dark" sitekey="6LfpvnksAAAAAErx5jRA6LdFuwzM_-q58foMbfIK" ref={captchaRef} onChange={handleCaptchaChange}
               />
               {errors.captcha && <span style={{ color: '#ef4444', fontSize: '0.8rem', display: 'block', marginTop: '5px' }}>{errors.captcha}</span>}
             </div>
